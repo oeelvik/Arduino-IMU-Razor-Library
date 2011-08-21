@@ -16,7 +16,7 @@ IMU::IMU(){
 
 	_last_update = 0;
 
-	_gyro_roll_reverse = false;
+	__gyro_roll_reversgyro_roll_reverse = false;
 	_gyro_nick_reverse = false;
 	_gyro_yaw_reverse = false;
 	_acc_roll_reverse = false;
@@ -62,6 +62,7 @@ void IMU::setAccTrim(int acc_roll, int acc_nick, int acc_vert){
 }
 
 void IMU::setAccGain(float acc_gain){
+	//TODO: Why does changing Acc gain affect gyro gain?
 	_acc_gain = acc_gain;
 	_gyro_gain = 1 - _acc_gain;
 }
@@ -117,14 +118,17 @@ int IMU::getYaw(){
 }
 
 int IMU::getRollDegree(){
+	//TODO: Remove magic constants
 	return (float)(getRoll() - 511) / 1024 * 360;
 }
 
 int IMU::getNickDegree(){
+	//TODO: Remove magic constants
 	return (float)(getNick() - 511) / 1024 * 360;
 }
 
 int IMU::getYawDegree(){
+	//TODO: Remove magic constants
 	return (float)(getYaw() - 511) / 1024 * 360;
 }
 
