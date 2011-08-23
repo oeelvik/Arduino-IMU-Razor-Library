@@ -5,8 +5,8 @@
  *      Author: develop
  */
 
-#ifndef IMU_H_
-#define IMU_H_
+#ifndef RAZOR_H_
+#define RAZOR_H_
 
 class Razor
 {
@@ -24,8 +24,8 @@ class Razor
 		int getAccYPinn() const { return _acc_y_pin; }
 		int getAccZPinn() const { return _acc_z_pin; }	
 		void setAccXPin(const int pinNum) { _acc_x_pin = pinNum; }
-		void setAccXPin(const int pinNum) { _acc_x_pin = pinNum; }
-		void setAccXPin(const int pinNum) { _acc_x_pin = pinNum; }
+		void setAccYPin(const int pinNum) { _acc_y_pin = pinNum; }
+		void setAccZPin(const int pinNum) { _acc_z_pin = pinNum; }
 
 		bool getAccXRev() const { return _acc_x_reverse; }
 		bool getAccYRev() const { return _acc_y_reverse; }
@@ -36,10 +36,10 @@ class Razor
 
 		bool getGyroXRev() const { return _gyro_x_reverse; }
 		bool getGyroYRev() const { return _gyro_y_reverse; }
-		bool getGyroZRev() const { return _gyro_Z_reverse; }
+		bool getGyroZRev() const { return _gyro_z_reverse; }
 		void setGyroXRev(const bool reversed) { _gyro_x_reverse = reversed; }
-		void setGyroZRev(const bool reversed) { _gyro_Y_reverse = reversed; }
-		void setGyroZRev(const bool reversed) { _gyro_Z_reverse = reversed; }
+		void setGyroYRev(const bool reversed) { _gyro_y_reverse = reversed; }
+		void setGyroZRev(const bool reversed) { _gyro_z_reverse = reversed; }
 	
 		bool getAccXTrim() const { return _acc_x_offset; }		
 		bool getAccYTrim() const { return _acc_y_offset; }
@@ -56,11 +56,17 @@ class Razor
 		void setGyroZTrim(const int trim) { _gyro_z_offset = trim; }
 */
 		void calibrateGyro();
-		//void calibrateAcc(); Dersom denne er mulig å implementere på noe fornuftig vis.
-	
+		//void calibrateAcc(); If possible to implement in the future.
+
+		/*
+		 * GetAcc returns value between 0 and 1024, where 0 = -3g, 511 = 0g, 1024 = 3g.
+		 */ 	
 		int getAccX() const;
 		int getAccY() const;
 		int getAccZ() const;
+		/*
+		 * GetGyro returns value between 0 and 1024, where 0 = -300deg/s, 511 = 0deg/s, 1024 = 300deg/s
+		 */
 		int getGyroX() const;
 		int getGyroY() const;
 		int getGyroZ() const;
@@ -88,4 +94,4 @@ class Razor
 		int _acc_z_pin;
 };
 
-#endif /* IMU_H_ */
+#endif
