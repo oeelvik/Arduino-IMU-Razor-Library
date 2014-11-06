@@ -23,6 +23,7 @@ public:
 	Vector3D& norm();
 
 	Vector3D& mult(float n);
+	Vector3D& div(float n);
 	Vector3D& add(float n);
 	Vector3D& sub(float n);
 

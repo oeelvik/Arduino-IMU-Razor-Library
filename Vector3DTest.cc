@@ -61,6 +61,14 @@ int main()
 	assert(a.y==4);
 	assert(a.z==0);
 
+	a.div(5);
+	assert(a.mag()==1);
+	assert(a.x==0.6f);
+	assert(a.y==0.8f);
+	assert(a.z==0);
+	a.mult(5);
+
+
 	// Vector3D& add(float n);
 	a.add(7);
 	assert(a.x==10);

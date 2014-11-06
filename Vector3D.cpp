@@ -54,6 +54,15 @@ Vector3D& Vector3D::mult(float n)
 	return *this;
 }
 
+Vector3D& Vector3D::div(float n)
+{
+	x = x / n;
+	y = y / n;
+	z = z / n;
+
+	return *this;
+}
+
 Vector3D& Vector3D::add(float n)
 {
 	x = x + n;
