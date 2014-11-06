@@ -1,3 +1,11 @@
+/**
+ * DCM holds a Direction Cosine Matrix along with common matematical operations.
+ *
+ * @author Øystein Schrøder Elvik
+ * @version 1.0
+ * @since 05.11.2014
+ */
+
 #ifndef DCM_h
 #define DCM_h
 

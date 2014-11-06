@@ -5,6 +5,7 @@
  * @version 1.0
  * @since 05.11.2014
  */
+ 
 #ifndef Vector3D_h
 #define Vector3D_h
 

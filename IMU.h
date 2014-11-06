@@ -1,36 +1,37 @@
-/*
- * IMU.h
+/**
+ * Abstract IMU class
  *
- *  Created on: 16. feb. 2011
- *      Author: develop
+ * @author Øystein Schrøder Elvik
+ * @version 1.0
+ * @since 05.11.2014
  */
 
-#ifndef IMU_H_
-#define IMU_H_
+#ifndef IMU_h
+#define IMU_h
 
-#include "Razor.h"
+#include "DCM.h"
 
 class IMU
 {
-	public:
-		IMU();
-		
-		Razor* getSensor() { return raz; }
+public:
+    IMU(){};
 
-		void update();
-		int getXDegree();
-		int getYDegree();
-		int getZDegree();
-	
-		~IMU();
-	private:
-		Razor* raz;		
+    void update();
 
-		int _last_update;
+    float getRollRadians();
+    float getNickRadians();
+    float getYawRadians();
 
-		float _roll;
-		float _nick;
-		float _yaw;
+    float getRollDegree();
+    float getNickDegree();
+    float getYawDegree();
+
+	DCM dcm;
+
+private:
+	float _rollRad;
+	float _nickRad;
+	float _yawRad;
 };
 
 #endif /* IMU_H_ */
