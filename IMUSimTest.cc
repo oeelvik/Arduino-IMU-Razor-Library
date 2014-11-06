@@ -20,7 +20,7 @@ int main()
 	
 	std::cout  << "IMUSimTest" << std::endl; // 5
 
-	// DCM()
+	// IMUSim()
 	IMUSim imu;
 	assert(imu.dcm.i.x == 1);
 	assert(imu.dcm.i.y == 0);

@@ -1,6 +1,9 @@
 #include "IMU.h"
 #include <math.h>
 
+IMU::IMU(){
+}
+
 void IMU::update(){
 	// ALT 1
 	float total = acos(dcm.k.z);

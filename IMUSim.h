@@ -14,6 +14,8 @@
 class IMUSim : public IMU
 {
 public:
+	IMUSim() : IMU() {};
+
     void update();
 };
 

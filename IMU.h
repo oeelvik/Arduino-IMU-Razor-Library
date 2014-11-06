@@ -14,7 +14,7 @@
 class IMU
 {
 public:
-    IMU(){};
+    IMU();
 
     void update();
 
@@ -34,4 +34,4 @@ private:
 	float _yawRad;
 };
 
-#endif /* IMU_H_ */
+#endif /* IMU_h */
