@@ -1,6 +1,13 @@
 #include "Vector3D.h"
 
-Vector3D::Vector3D(float x = 0, float y = 0, float z = 0)
+Vector3D::Vector3D()
+{
+	this->x = 0;
+	this->y = 0;
+	this->z = 0;
+}
+
+Vector3D::Vector3D(float x, float y, float z)
 {
 	this->x = x;
 	this->y = y;

@@ -9,9 +9,12 @@
 #ifndef Vector3D_h
 #define Vector3D_h
 
+#include <math.h>
+
 class Vector3D
 {
 public:
+	Vector3D();
 	Vector3D(float x, float y, float z);
 
 	Vector3D copy();
