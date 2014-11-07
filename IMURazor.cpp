@@ -1,7 +1,9 @@
 #include "IMURazor.h"
 
-IMURazor::IMURazor(){
-  calibrateGyro();
+void IMURazor::init(){
+  while (!calibrateGyro()){
+    //Retry calibration until success
+  }
 }
 
 
@@ -16,13 +18,13 @@ void IMURazor::update(){
       analogRead(_gyro_x_pin) - _gyro_x_zero,
       analogRead(_gyro_y_pin) - _gyro_y_zero,
       analogRead(_gyro_z_pin) - _gyro_z_zero
-    )
+    );
 
-  //TODO: convert wG to rad/ms
-  //wG.mult(?)
+  //convert wG to rad/ms
+  wG.mult(_GYRO_SCALE);
 
   //Convert to radians this interval
-  unsigned long int now = millis;
+  unsigned long now = millis();
   int deltaTime = now - _lastTime;
   wG.mult(deltaTime);
 
@@ -35,12 +37,16 @@ void IMURazor::update(){
       analogRead(_accel_x_pin) - _accel_x_zero,
       analogRead(_accel_y_pin) - _accel_y_zero,
       analogRead(_accel_z_pin) - _accel_z_zero
-    )
+    );
+
+
+  //convert Kacc to g
+  //Kacc.mult(_ACCEL_SCALE); //we ar going to normalize so this is not nessesary
 
   //Calculat correction vector
   static Vector3D wA;
-  wA.set(&dcm.z).cross(
-      Kacc.mult(-1).norm()
+  wA.set(&dcm.k).cross(
+      &Kacc.mult(-1).norm()
     );
 
 
@@ -50,25 +56,25 @@ void IMURazor::update(){
   //Default to North in XZ plane in absens of device
   static Vector3D Kmag;
   Kmag.set(
-      sqrt(1 - dcm.x.z * dcm.x.z ),
+      sqrt(1 - dcm.i.z * dcm.i.z ),
       0,
-      dcm.x.z
+      dcm.i.z
     );
 
   //Calculat correction vector
   static Vector3D wM;
-  wM.set(&dcm.x).cross(Kacc);
+  wM.set(&dcm.i).cross(&Kacc);
 
 
   //------------------
   // Update DCM
   //-----------------
   wG
-    .add(wA.mult(_accel_weight))
-    .add(wM.mult(_mag_weight))
+    .add(&wA.mult(_accel_weight))
+    .add(&wM.mult(_mag_weight))
     .div(1.0 + _accel_weight + _mag_weight);
 
-  dcm.rotate(wG);
+  dcm.rotate(&wG);
 }
 
 void IMURazor::setPins(int acc_x, int acc_y, int acc_z, int gyro_x, int gyro_y, int gyro_z) {
@@ -104,20 +110,49 @@ void IMURazor::setMagWeight(float weight){
   _mag_weight = weight;
 }
 
-void IMURazor::calibrateGyro(){
-  //TODO: check if copter was moved during mesurements (All mesurements are within aceptable range)
+bool IMURazor::calibrateGyro(){
+  int x_max = 0;
+  int x_min = 1024;
+  int y_max = 0;
+  int y_min = 1024;
+  int z_max = 0;
+  int z_min = 1024;
+
   long x_sum = 0;
   long y_sum = 0;
   long z_sum = 0;
   for(int i = 0; i < 50; i++){
-    x_sum += analogRead(_gyro_x_pin);
-    y_sum += analogRead(_gyro_y_pin);
-    z_sum += analogRead(_gyro_z_pin);
-    //TODO: Add delay?
+    int x = analogRead(_gyro_x_pin);
+    int y = analogRead(_gyro_y_pin);
+    int z = analogRead(_gyro_z_pin);
+
+    if (x > x_max) x_max = x;
+    if (x < x_min) x_min = x;
+    if (y > y_max) y_max = y;
+    if (y < y_min) y_min = y;
+    if (z > z_max) z_max = z;
+    if (z < z_min) z_min = z;
+
+    x_sum += x;
+    y_sum += y;
+    z_sum += z;
+    delay(50);
+  }
+
+  //check if copter was moved during mesurements (All mesurements are within aceptable range)
+  //TODO: test if working and treshold is ok
+  if(
+    x_max - x_min > _GYRO_CALIBRATION_TRESHOLD or
+    y_max - y_min > _GYRO_CALIBRATION_TRESHOLD or
+    z_max - z_min > _GYRO_CALIBRATION_TRESHOLD
+    ) {
+    return false;
   }
 
   _gyro_x_zero = x_sum / 50;
   _gyro_y_zero = y_sum / 50;
   _gyro_z_zero = z_sum / 50;
+
+  return true;
 }
 

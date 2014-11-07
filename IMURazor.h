@@ -9,9 +9,18 @@
 #ifndef IMURazor_H_
 #define IMURazor_H_
 
+// ( (1 / 1024) * 3300 ) / 0,83 (0,83mv/deg/sec) ) = 3.882718 (analogRead -> deg/sec scaling factor)
+// ( (1 / 180) * M_PI) / 1000 ) = 0,00001744444 (deg/s -> rad/ms scaling factor)
+// (analogRead -> deg/sec scaling factor) * (deg/s -> rad/ms scaling factor) = 6,7766219545148809344975756965508e-5 (analog read ->  rad/ms scaling factor)
+#define _GYRO_SCALE 0.000067766219545148809344975756965508
+#define _GYRO_CALIBRATION_TRESHOLD 5
+
 #define _ACCEL_ZERO 511
 #define _ACCEL_WEIGHT 0.01
+#define _ACCEL_SCALE 0.0107421875 // ( (1 / 1024 ) * 3300) / 300 //300[mV pr g] / 3300[Aref] * 1024 = 93 [val at 1g] //Mesured to 102 after trail and error
+
 #define _MAG_WEIGHT 0.0
+
 
 #if defined(ARDUINO) && ARDUINO >= 100
   #include "Arduino.h"
@@ -24,7 +33,9 @@
 class IMURazor : public IMU
 {
 public:
-    IMURazor() : IMU(), _accel_x_zero(_ACCEL_ZERO), _accel_y_zero(_ACCEL_ZERO), _accel_z_zero(_ACCEL_ZERO), _accel_weight(_ACCEL_WEIGHT), _mag_weight(_MAG_WEIGHT);
+    IMURazor() : IMU(), _accel_x_zero(_ACCEL_ZERO), _accel_y_zero(_ACCEL_ZERO), _accel_z_zero(_ACCEL_ZERO), _accel_weight(_ACCEL_WEIGHT), _mag_weight(_MAG_WEIGHT){};
+
+    void init();
 
     void update();
 
@@ -36,7 +47,7 @@ public:
     void setMagWeight(float weight);
 
 private:
-    void calibrateGyro();
+    bool calibrateGyro();
 
     int _accel_x_pin;
     int _accel_y_pin;
