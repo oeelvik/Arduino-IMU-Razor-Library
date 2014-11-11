@@ -5,19 +5,6 @@ IMU::IMU(){
 }
 
 void IMU::update(){
-	// ALT 1
-	float total = acos(dcm.k.z);
-	float Kxy = sqrt(dcm.k.x * dcm.k.x + dcm.k.y * dcm.k.y);
-
-	if(fabs(Kxy) < 0.01) { //Default to roll when close to uppside down
-		_nickRad = 0;
-		_rollRad = total;
-	} else {
-		_nickRad = -total * asin(dcm.k.x / Kxy) / (3.14/2);
-		_rollRad = total * asin(dcm.k.y / Kxy) / (3.14/2);
-	}
-
-	// ALT 2
 	_nickRad = -asin(dcm.k.x);
 	_rollRad = atan2(dcm.k.y, dcm.k.z);
 	_yawRad = atan2(dcm.j.x, dcm.i.x);

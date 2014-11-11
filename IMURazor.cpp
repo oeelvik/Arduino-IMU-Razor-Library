@@ -6,18 +6,16 @@ void IMURazor::init(){
   }
 }
 
-
 void IMURazor::update(){
-
 
   //------------------
   // Gyro
   //------------------
   static Vector3D wG;
   wG.set(
-      analogRead(_gyro_x_pin) - _gyro_x_zero,
-      analogRead(_gyro_y_pin) - _gyro_y_zero,
-      analogRead(_gyro_z_pin) - _gyro_z_zero
+      (analogRead(_gyro_x_pin) - _gyro_x_zero) * _gyro_x_reverse,
+      (analogRead(_gyro_y_pin) - _gyro_y_zero) * _gyro_y_reverse,
+      (analogRead(_gyro_z_pin) - _gyro_z_zero) * _gyro_z_reverse
     );
 
   //convert wG to rad/ms
@@ -26,7 +24,9 @@ void IMURazor::update(){
   //Convert to radians this interval
   unsigned long now = millis();
   int deltaTime = now - _lastTime;
+  _lastTime = now;
   wG.mult(deltaTime);
+
 
   //------------------
   // Accelerometer
@@ -34,11 +34,10 @@ void IMURazor::update(){
   //Get Accelerometer forces
   static Vector3D Kacc;
   Kacc.set(
-      analogRead(_accel_x_pin) - _accel_x_zero,
-      analogRead(_accel_y_pin) - _accel_y_zero,
-      analogRead(_accel_z_pin) - _accel_z_zero
+      (analogRead(_accel_x_pin) - _accel_x_zero) * _accel_x_reverse,
+      (analogRead(_accel_y_pin) - _accel_y_zero) * _accel_y_reverse,
+      (analogRead(_accel_z_pin) - _accel_z_zero) * _accel_z_reverse
     );
-
 
   //convert Kacc to g
   //Kacc.mult(_ACCEL_SCALE); //we ar going to normalize so this is not nessesary
@@ -75,6 +74,8 @@ void IMURazor::update(){
     .div(1.0 + _accel_weight + _mag_weight);
 
   dcm.rotate(&wG);
+
+  IMU::update();
 }
 
 void IMURazor::setPins(int acc_x, int acc_y, int acc_z, int gyro_x, int gyro_y, int gyro_z) {
@@ -95,10 +96,10 @@ void IMURazor::setReversing(bool acc_x, bool acc_y, bool acc_z, bool gyro_x, boo
   _gyro_z_reverse = (gyro_z) ? -1 : 1;
 }
 
-void IMURazor::setAccelTrim(int x, int y, int z){
-  _accel_x_zero += x;
-  _accel_y_zero += y;
-  _accel_z_zero += z;
+void IMURazor::setAccelTrim(float x, float y, float z){
+  _accel_x_zero = _ACCEL_ZERO + x;
+  _accel_y_zero = _ACCEL_ZERO + y;
+  _accel_z_zero = _ACCEL_ZERO + z;
 }
 
 
@@ -118,9 +119,10 @@ bool IMURazor::calibrateGyro(){
   int z_max = 0;
   int z_min = 1024;
 
-  long x_sum = 0;
-  long y_sum = 0;
-  long z_sum = 0;
+  float x_sum = 0;
+  float y_sum = 0;
+  float z_sum = 0;
+
   for(int i = 0; i < 50; i++){
     int x = analogRead(_gyro_x_pin);
     int y = analogRead(_gyro_y_pin);

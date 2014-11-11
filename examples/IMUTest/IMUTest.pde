@@ -1,30 +1,26 @@
-#include <IMU.h>
+#include <IMURazor.h>
 
 //Sensor pins
 #define GYRO_ROLL_PIN 4
-#define GYRO_NICK_PIN 3
-#define GYRO_YAW_PIN 5
+#define GYRO_NICK_PIN 5
+#define GYRO_YAW_PIN 3
 #define ACC_ROLL_PIN 1
 #define ACC_NICK_PIN 2
 #define ACC_VERT_PIN 0
 #define YAW_SERVO_PIN 9
 
-IMU imu;
-
-float gyro_scale = 11.044;//(1024/360)/1024 * 3,3/0,00083 (0,83mv/deg/sec)
-float acc_scale = (float)1024 / 4 / 102;//(float) 300 / 3300 * 1024; //300[mV pr g] / 3300[Aref] * 1024 = 93 [val at 1g] //Adjusted to 102 after trail and error
+IMURazor imu;
 
 void setup(){
   analogReference(EXTERNAL);
-  
-  imu.setGyroScale(gyro_scale);
-  imu.setAccScale(acc_scale);
-  imu.setAccGain(0.04);
-  imu.setAccTrim(-12, -4, 40);
-  imu.setPins(GYRO_ROLL_PIN, GYRO_NICK_PIN, GYRO_YAW_PIN, ACC_ROLL_PIN, ACC_NICK_PIN, ACC_VERT_PIN);
-  imu.setReversing(true, true, true, false, false, false);
-  imu.calibrateGyro();
   Serial.begin(115200);
+  
+  imu.setAccelWeight(0.04);
+  imu.setMagWeight(0.0);
+  imu.setAccelTrim(-5, -7.5, 40);
+  imu.setPins(ACC_NICK_PIN, ACC_ROLL_PIN, ACC_VERT_PIN, GYRO_ROLL_PIN, GYRO_NICK_PIN, GYRO_YAW_PIN);
+  imu.setReversing(false, true, true, false, false, false);
+  imu.init();
 }
 
 void loop(){
@@ -34,13 +30,6 @@ void loop(){
   send_attitude();
   send_location();
   
-  /*
-  Serial.print(imu.getAccRoll());
-  Serial.print("\t");
-  Serial.print(imu.getAccNick());
-  Serial.print("\t");*/
-  
-  
   /*Serial.print(imu.getRollDegree());
   Serial.print("\t");
   Serial.print(imu.getNickDegree());
@@ -49,9 +38,10 @@ void loop(){
   Serial.print("\t");*/
   
   //Enable to find acc trim
-  /*Serial.print(analogRead(ACC_ROLL_PIN) - 511); //Should be 0 (example if this value is -10 your trim should be -10)
-  Serial.print("\t");
+  /*Serial.print("\t");
   Serial.print(analogRead(ACC_NICK_PIN) - 511); //Should be 0 (example if this value is -10 your trim should be -10)
+  Serial.print("\t");
+  Serial.print(analogRead(ACC_ROLL_PIN) - 511); //Should be 0 (example if this value is -10 your trim should be -10)
   Serial.print("\t");
   Serial.print(analogRead(ACC_VERT_PIN) - 511); //Should be ca 100 (value at 1g) (example if this value is 142 your trim should be 142 - 100 = 42)
   */
