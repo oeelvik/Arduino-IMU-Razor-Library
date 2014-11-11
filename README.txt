@@ -1,5 +1,4 @@
-This library is in an early development phase. Nothing is stable at this point, and its not recommended for implementation. Please check back at a later point for a usable version.
+This is a Arduino IMU library using DCM technique to calculate rotation angles.
+Currently only supporting the IMURazor 6dof from sparkfun. 
 
-README for Arduino-IMU-Razor-Library
-
-More to come!
+See example sketch for usage.
