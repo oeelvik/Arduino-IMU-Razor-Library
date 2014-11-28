@@ -38,6 +38,14 @@ public:
 
     void init();
 
+    float getRollRotation();
+    float getNickRotation();
+    float getYawRotation();
+
+    float getAccelerationX();
+    float getAccelerationY();
+    float getAccelerationZ();
+
     void update();
 
     void setPins(int acc_x, int acc_y, int acc_z, int gyro_x, int gyro_y, int gyro_z);
@@ -75,6 +83,9 @@ private:
     float _mag_weight;
 
     unsigned long int _lastTime;
+
+    Vector3D rotation; //rotation last interval
+    Vector3D Kacc; // G forces
 };
 
 #endif /* IMURazor_H_ */

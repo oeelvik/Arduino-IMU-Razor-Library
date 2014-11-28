@@ -6,33 +6,55 @@ void IMURazor::init(){
   }
 }
 
+float IMURazor::getRollRotation() {
+  return rotation.x;
+}
+
+float IMURazor::getNickRotation(){
+  return rotation.y;
+}
+
+float IMURazor::getYawRotation(){
+  return rotation.z;
+}
+
+float IMURazor::getAccelerationX(){
+  return Kacc.x;
+}
+
+float IMURazor::getAccelerationY(){
+  return Kacc.y;
+}
+
+float IMURazor::getAccelerationZ(){
+  return Kacc.z;
+}
+
 void IMURazor::update(){
 
   //------------------
   // Gyro
   //------------------
-  static Vector3D wG;
-  wG.set(
+  rotation.set(
       (analogRead(_gyro_x_pin) - _gyro_x_zero) * _gyro_x_reverse,
       (analogRead(_gyro_y_pin) - _gyro_y_zero) * _gyro_y_reverse,
       (analogRead(_gyro_z_pin) - _gyro_z_zero) * _gyro_z_reverse
     );
 
-  //convert wG to rad/ms
-  wG.mult(_GYRO_SCALE);
+  //convert rotation to rad/ms
+  rotation.mult(_GYRO_SCALE);
 
   //Convert to radians this interval
   unsigned long now = millis();
   int deltaTime = now - _lastTime;
   _lastTime = now;
-  wG.mult(deltaTime);
+  rotation.mult(deltaTime);
 
 
   //------------------
   // Accelerometer
   //------------------
   //Get Accelerometer forces
-  static Vector3D Kacc;
   Kacc.set(
       (analogRead(_accel_x_pin) - _accel_x_zero) * _accel_x_reverse,
       (analogRead(_accel_y_pin) - _accel_y_zero) * _accel_y_reverse,
@@ -43,8 +65,8 @@ void IMURazor::update(){
   //Kacc.mult(_ACCEL_SCALE); //we ar going to normalize so this is not nessesary
 
   //Calculat correction vector
-  static Vector3D wA;
-  wA.set(&dcm.k).cross(
+  static Vector3D rotationA;
+  rotationA.set(&dcm.k).cross(
       &Kacc.mult(-1).norm()
     );
 
@@ -61,19 +83,19 @@ void IMURazor::update(){
     );
 
   //Calculat correction vector
-  static Vector3D wM;
-  wM.set(&dcm.i).cross(&Kacc);
+  static Vector3D rotationM;
+  rotationM.set(&dcm.i).cross(&Kacc);
 
 
   //------------------
   // Update DCM
   //-----------------
-  wG
-    .add(&wA.mult(_accel_weight))
-    .add(&wM.mult(_mag_weight))
+  rotation
+    .add(&rotationA.mult(_accel_weight))
+    .add(&rotationM.mult(_mag_weight))
     .div(1.0 + _accel_weight + _mag_weight);
 
-  dcm.rotate(&wG);
+  dcm.rotate(&rotation);
 
   IMU::update();
 }
